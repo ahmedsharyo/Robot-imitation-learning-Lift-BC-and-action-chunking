@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "robot-imitation-learning"
+version = "0.1.0"
+description = "Reproducible low-dimensional Lift behavior cloning experiments"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy==1.26.4",
+  "torch==2.3.1",
+  "h5py==3.11.0",
+  "PyYAML==6.0.2",
+  "pandas==2.2.2",
+  "matplotlib==3.9.1",
+]
+
+[project.optional-dependencies]
+sim = ["robomimic==0.3.0", "robosuite==1.4.1", "mujoco==3.1.6"]
+dev = ["pytest==8.3.2"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

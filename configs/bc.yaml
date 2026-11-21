@@ -1,0 +1,7 @@
+model: bc
+seed: 1
+device: auto
+epochs: 100
+batch_size: 256
+learning_rate: 0.001
+hidden_dims: [256, 256]

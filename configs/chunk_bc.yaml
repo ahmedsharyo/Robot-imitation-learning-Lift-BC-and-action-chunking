@@ -1,0 +1,9 @@
+model: chunk
+seed: 1
+device: auto
+epochs: 100
+horizon: 8
+execution_horizon: 1
+batch_size: 256
+learning_rate: 0.001
+hidden_dims: [256, 256]
