@@ -3,11 +3,11 @@ import argparse, json, platform
 from pathlib import Path
 import torch
 from torch.utils.data import DataLoader
-from robot_il.data.dataset import load_trajectories, split_trajectories, ObservationNormalizer, TransitionDataset, ChunkDataset
-from robot_il.models.mlp_bc import MLPBC
-from robot_il.models.chunk_bc import ChunkBC
-from robot_il.training.trainer import train, save_checkpoint
-from robot_il.utils.seeding import seed_everything, choose_device
+from src.robot_il.data.dataset import load_trajectories, split_trajectories, ObservationNormalizer, TransitionDataset, ChunkDataset
+from src.robot_il.models.mlp_bc import MLPBC
+from src.robot_il.models.chunk_bc import ChunkBC
+from src.robot_il.training.trainer import train, save_checkpoint
+from src.robot_il.utils.seeding import seed_everything, choose_device
 
 def main():
     p=argparse.ArgumentParser(); p.add_argument("--data",default="data/lift.hdf5"); p.add_argument("--model",choices=["bc","chunk"],default="bc")

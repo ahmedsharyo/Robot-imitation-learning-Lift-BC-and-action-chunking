@@ -2,13 +2,13 @@ import h5py
 import numpy as np
 import pytest
 import torch
-from robot_il.data.dataset import (Trajectory, load_trajectories, split_trajectories,
+from src.robot_il.data.dataset import (Trajectory, load_trajectories, split_trajectories,
     ObservationNormalizer, TransitionDataset, ChunkDataset)
-from robot_il.models.mlp_bc import MLPBC
-from robot_il.models.chunk_bc import ChunkBC
-from robot_il.training.losses import masked_mse
-from robot_il.training.trainer import save_checkpoint, load_checkpoint
-from robot_il.evaluation.rollout import execute_chunk
+from src.robot_il.models.mlp_bc import MLPBC
+from src.robot_il.models.chunk_bc import ChunkBC
+from src.robot_il.training.losses import masked_mse
+from src.robot_il.training.trainer import save_checkpoint, load_checkpoint
+from src.robot_il.evaluation.rollout import execute_chunk
 
 
 def synthetic(n=5):

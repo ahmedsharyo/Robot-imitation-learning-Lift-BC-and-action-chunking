@@ -42,7 +42,7 @@ python scripts/plot_results.py results/bc_s1/metrics.json results/chunk8_s1/metr
 
 The split is made by trajectory with a seeded 80/10/10 split and saved in checkpoint metadata; normalization statistics are fit on training demonstrations only. Chunk targets stop at trajectory ends and are right-padded with masks. `H` (prediction horizon) is distinct from `K` (execution horizon): use `rollout(..., horizon=H, execute_horizon=K)`. `K=H` is open loop for that chunk; `K=1` replans every step.
 
-The offline evaluator reports held-out action MSE, which is not task success. `robot_il.evaluation.rollout` provides a robosuite environment/step adapter, but observation conversion is environment-specific and must be supplied as `obs_fn`; validate action semantics and limits for the chosen controller before interpreting success. The rollout helper does not currently aggregate multi-seed success statistics or write videos.
+The offline evaluator reports held-out action MSE, which is not task success. `src.robot_il.evaluation.rollout` provides a robosuite environment/step adapter, but observation conversion is environment-specific and must be supplied as `obs_fn`; validate action semantics and limits for the chosen controller before interpreting success. The rollout helper does not currently aggregate multi-seed success statistics or write videos.
 
 ## Tests and experiment scope
 
@@ -56,4 +56,4 @@ For primary comparisons, repeat at least three seeds, keep held-out trajectory I
 
 ## Layout
 
-`src/robot_il/data` handles HDF5 trajectories and sequence sampling; `models` contains the two policies; `training` implements masked loss and early-stopped training; `evaluation` separates offline metrics from optional simulation; `scripts` are command-line entry points; `reports` and `results` hold generated artifacts.
+`src/src.robot_il/data` handles HDF5 trajectories and sequence sampling; `models` contains the two policies; `training` implements masked loss and early-stopped training; `evaluation` separates offline metrics from optional simulation; `scripts` are command-line entry points; `reports` and `results` hold generated artifacts.
