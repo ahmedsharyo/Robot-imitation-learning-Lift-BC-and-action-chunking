@@ -62,6 +62,6 @@ def test_checkpoint_roundtrip(tmp_path):
 def test_chunk_execution_bounds():
     class E:
         def __init__(self): self.n=0
-        def step(self,a): self.n+=1; return self.n
+        def step(self, a=None): self.n+=1; return self.n
     e=E(); assert execute_chunk(e,np.zeros((4,2)),2)==[1,2]
     with pytest.raises(ValueError): execute_chunk(e,np.zeros((4,2)),5)
