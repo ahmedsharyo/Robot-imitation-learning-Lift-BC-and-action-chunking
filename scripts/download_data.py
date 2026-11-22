@@ -1,27 +1,66 @@
 #!/usr/bin/env python3
 """Download robomimic Lift low-dimensional dataset using the official utility."""
-import argparse, subprocess, sys
+import argparse
+import os
+import shutil
+import sys
 from pathlib import Path
 
-def main():
-    p = argparse.ArgumentParser()
-    p.add_argument("--output", default="data/lift.hdf5")
-    p.add_argument("--dataset", default="lift/mg")
-    args = p.parse_args()
-    out = Path(args.output); out.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        import robomimic
-        from robomimic.utils.dataset_registry import get_dataset_path
-    except Exception as e:
-        sys.exit(f"robomimic not installed. Install with `pip install -e '.[sim]'`. Details: {e}")
-    try:
-        resolved = Path(get_dataset_path(args.dataset))
-    except Exception as e:
-        sys.exit(f"Could not resolve official registry key {args.dataset!r}: {e}")
-    if not resolved.exists():
-        sys.exit(f"robomimic resolved {args.dataset!r} to {resolved}, but the dataset is not present. Use the official robomimic download_dataset.py utility for the selected release, then copy the HDF5 file to {out}.")
-    import shutil
-    shutil.copy2(resolved, out)
-    print(f"Copied official robomimic dataset {args.dataset} from {resolved} to {out}")
 
-if __name__ == "__main__": main()
+def main():
+    parser = argparse.ArgumentParser(description="Download robomimic demonstration dataset.")
+    parser.add_argument("--output", default="data/lift.hdf5", help="Target output HDF5 path.")
+    parser.add_argument("--task", default="lift", help="Task name (default: lift).")
+    parser.add_argument("--dataset_type", default="mg", help="Dataset type: ph (proficient-human) or mg (machine-generated).")
+    parser.add_argument("--hdf5_type", default="low_dim_sparse", help="HDF5 type (e.g., low_dim_sparse, low_dim_dense, low_dim).")
+    args = parser.parse_args()
+
+    out = Path(args.output)
+    out.parent.mkdir(parents=True, exist_ok=True)
+
+    try:
+        from robomimic import DATASET_REGISTRY
+        import robomimic.utils.file_utils as FileUtils
+    except ImportError as e:
+        sys.exit(f"robomimic not installed. Please install robomimic. Details: {e}")
+
+    task_reg = DATASET_REGISTRY.get(args.task, {})
+    type_reg = task_reg.get(args.dataset_type, {})
+
+    # Match requested hdf5_type or fallback gracefully
+    entry = type_reg.get(args.hdf5_type)
+    if not entry:
+        # Check available types
+        for candidate in ["low_dim_sparse", "low_dim_dense", "low_dim", "raw"]:
+            if candidate in type_reg and type_reg[candidate].get("url"):
+                entry = type_reg[candidate]
+                args.hdf5_type = candidate
+                break
+
+    if not entry or not entry.get("url"):
+        sys.exit(
+            f"Could not find download URL for task='{args.task}', "
+            f"dataset_type='{args.dataset_type}', hdf5_type='{args.hdf5_type}' in DATASET_REGISTRY."
+        )
+
+    url = entry["url"]
+    filename = url.split("/")[-1]
+    download_dir = out.parent / "downloads"
+    download_dir.mkdir(parents=True, exist_ok=True)
+    downloaded_file = download_dir / filename
+
+    if not downloaded_file.exists():
+        print(f"Downloading {args.task}/{args.dataset_type}/{args.hdf5_type} from {url} ...")
+        FileUtils.download_url(url=url, download_dir=str(download_dir))
+    else:
+        print(f"Using cached download at {downloaded_file}")
+
+    if not downloaded_file.exists():
+        sys.exit(f"Downloaded file not found at {downloaded_file}")
+
+    shutil.copy2(downloaded_file, out)
+    print(f"Successfully staged dataset to {out}")
+
+
+if __name__ == "__main__":
+    main()
